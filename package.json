@@ -1,5 +1,5 @@
 {
-  "name": "@org/source",
+  "name": "online-store",
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {},
@@ -71,5 +71,6 @@
     "vite": "8.0.9",
     "vite-tsconfig-paths": "^5.1.4",
     "vitest": "~4.1.0"
-  }
+  },
+  "packageManager": "pnpm@12.3.4"
 }
