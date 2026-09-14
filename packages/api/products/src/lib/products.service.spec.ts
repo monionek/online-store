@@ -1,107 +1,49 @@
-import { ProductsService } from './products.service';
-import { ProductFilter } from '@org/models';
+import { ProductService } from './products.service';
 
-describe('ProductsService', () => {
-  let service: ProductsService;
+describe("ProductService", () => {
+  let service: ProductService
 
+  //beafore each test we are creating new service
   beforeEach(() => {
-    service = new ProductsService();
+    service = new ProductService();
   });
 
-  it('should create', () => {
-    expect(service).toBeTruthy();
+  describe("addProduct", () => {
+    it("should add new Product", () => {
+      service.addProduct("Apple");
+      const result = service.getProducts();
+      expect(result).toEqual(["Apple"])
+    })
   });
 
-  describe('getAllProducts', () => {
-    it('should return paginated products with default pagination', () => {
-      const result = service.getAllProducts();
+  describe("getProducts", () => {
+    it("Should return all Products", () => {
+      service.addProduct("Apple");
+      service.addProduct("Pineapple");
+      const result = service.getProducts();
 
-      expect(result).toHaveProperty('items');
-      expect(result).toHaveProperty('total');
-      expect(result).toHaveProperty('page');
-      expect(result).toHaveProperty('pageSize');
-      expect(result.page).toBe(1);
-      expect(result.pageSize).toBe(12);
-      expect(result.items.length).toBeLessThanOrEqual(12);
-    });
-
-    it('should filter products by category', () => {
-      const filter: ProductFilter = { category: 'Electronics' };
-      const result = service.getAllProducts(filter);
-
-      result.items.forEach((product) => {
-        expect(product.category).toBe('Electronics');
-      });
-    });
-
-    it('should filter products by price range', () => {
-      const filter: ProductFilter = { minPrice: 50, maxPrice: 150 };
-      const result = service.getAllProducts(filter);
-
-      result.items.forEach((product) => {
-        expect(product.price).toBeGreaterThanOrEqual(50);
-        expect(product.price).toBeLessThanOrEqual(150);
-      });
-    });
-
-    it('should handle search term filtering', () => {
-      const filter: ProductFilter = { searchTerm: 'Product 1' };
-      const result = service.getAllProducts(filter);
-
-      result.items.forEach((product) => {
-        const matchesSearch =
-          product.name.toLowerCase().includes('product 1') ||
-          product.description.toLowerCase().includes('product 1');
-        expect(matchesSearch).toBe(true);
-      });
-    });
-
-    it('should paginate results correctly', () => {
-      const page1 = service.getAllProducts(undefined, 1, 5);
-      const page2 = service.getAllProducts(undefined, 2, 5);
-
-      expect(page1.items.length).toBeLessThanOrEqual(5);
-      expect(page2.items.length).toBeLessThanOrEqual(5);
-      expect(page1.items[0]?.id).not.toBe(page2.items[0]?.id);
-    });
+      expect(result).toEqual(["Apple", "Pineapple"])
+    })
   });
 
-  describe('getProductById', () => {
-    it('should return a product by id', () => {
-      const product = service.getProductById('prod-1');
+  describe("deleteProduct", () => {
+    it("Should delete one product", () => {
+      service.addProduct("Apple");
+      service.addProduct("Pineapple");
+      service.removeProduct(1);
+      const result = service.getProducts();
 
-      expect(product).toBeTruthy();
-      expect(product?.id).toBe('prod-1');
-    });
-
-    it('should return null for non-existent id', () => {
-      const product = service.getProductById('non-existent');
-
-      expect(product).toBeNull();
-    });
+      expect(result).toEqual(["Apple"]);
+    })
   });
 
-  describe('getCategories', () => {
-    it('should return unique categories', () => {
-      const categories = service.getCategories();
-
-      expect(categories).toBeTruthy();
-      expect(Array.isArray(categories)).toBe(true);
-      expect(categories.length).toBeGreaterThan(0);
-
-      const uniqueCategories = new Set(categories);
-      expect(uniqueCategories.size).toBe(categories.length);
-    });
-  });
-
-  describe('getPriceRange', () => {
-    it('should return min and max prices', () => {
-      const range = service.getPriceRange();
-
-      expect(range).toHaveProperty('min');
-      expect(range).toHaveProperty('max');
-      expect(range.min).toBeLessThanOrEqual(range.max);
-      expect(range.min).toBeGreaterThanOrEqual(0);
-    });
-  });
-});
+  describe("modifyProduct", () => {
+    it("should modify product", () => {
+      service.addProduct("Apple");
+      service.addProduct("Pineapple");
+      service.modifyProduct(1, "Orange");
+      const result = service.getProduct(1);
+      expect(result).toBe("Orange");
+    })
+  })
+})
